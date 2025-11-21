@@ -1,6 +1,8 @@
 from pathlib import Path
 import pandas as pd
 
+
+# chemins vers les fichiers de données
 RAW_FILE = Path("data") / "wb_inequality_data.xlsx"
 CLEAN_FILE = Path("data") / "inequality_clean.xlsx"
 
@@ -12,6 +14,10 @@ def clean_inequality_data(
     start_year: int = 1995,
     end_year: int = 2020,
 ) -> pd.DataFrame:
+    """
+    Charge le fichier brut de la Banque mondiale, applique les filtres et
+    nettoyages, sauvegarde un fichier nettoyé et renvoie le DataFrame.
+    """
 
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -21,7 +27,7 @@ def clean_inequality_data(
 
     print("Initial shape:", df.shape)
 
-   
+    # 1) Garder uniquement les pays avec au moins 'min_gini_per_country' valeurs Gini
     gini_counts = df[df["gini"].notna()].groupby("country")["gini"].count()
     valid_countries = gini_counts[gini_counts >= min_gini_per_country].index
 
@@ -29,40 +35,41 @@ def clean_inequality_data(
     df = df[df["country"].isin(valid_countries)]
     print("After country filter:", df.shape)
 
- 
+    # 2) Filtrer les années
     df = df[(df["year"] >= start_year) & (df["year"] <= end_year)]
     print(f"After year filter ({start_year}-{end_year}):", df.shape)
 
-
+    # 3) Supprimer les lignes sans Gini (cible obligatoire)
     df = df[df["gini"].notna()]
     print("After dropping rows without Gini:", df.shape)
 
-    
+    # 4) Trier par pays / année
     df = df.sort_values(["country", "year"])
 
+    # 5) Colonnes numériques à interpoler
     numeric_cols = df.select_dtypes(include="number").columns.tolist()
 
-
+    # On ne touche pas à 'gini' ni à 'year'
     for col in ["gini", "year"]:
         if col in numeric_cols:
             numeric_cols.remove(col)
 
     print("Numeric columns to interpolate:", numeric_cols)
 
- 
+    # Interpolation par pays (vers l'avant et l'arrière)
     for col in numeric_cols:
         df[col] = df.groupby("country")[col].transform(
             lambda s: s.interpolate(limit_direction="both")
         )
 
-  
+    # 6) Remplir les éventuels NA restants par la médiane globale de la colonne
     for col in numeric_cols:
         df[col] = df[col].fillna(df[col].median())
 
     print("\nNumber of NA per column after cleaning:")
     print(df.isna().sum())
 
-
+    # 7) Sauvegarde dans data/
     output_path.parent.mkdir(exist_ok=True)
     df.to_excel(output_path, index=False)
 
@@ -70,8 +77,6 @@ def clean_inequality_data(
     print("Final shape:", df.shape)
 
     return df
-
-from sklearn.model_selection import train_test_split
 
 
 if __name__ == "__main__":
