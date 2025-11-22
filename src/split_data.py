@@ -59,3 +59,5 @@ if __name__ == "__main__":
     print(" y_test :", y_test.shape)
 
     save_splits(X_train, X_test, y_train, y_test)
+
+# load with python -m src.split_data (module package src)
