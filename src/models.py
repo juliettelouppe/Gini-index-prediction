@@ -155,3 +155,6 @@ if __name__ == "__main__":
     df = clean_inequality_data()
     X_train, X_test, y_train, y_test = split_data(df, "gini")
     compare_models(X_train, X_test, y_train, y_test)
+
+
+# load with python -m src.models (package src)
