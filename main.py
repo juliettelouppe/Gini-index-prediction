@@ -20,23 +20,23 @@ def main():
     print(" Gini Index Prediction: Model Comparison")
     print("=======================================================\n")
 
-   
+#Load an preprocessing data 
     print("1. Loading and preprocessing data...")
     df = clean_inequality_data()
     print(f"   Dataset shape: {df.shape}")
 
-   
+#Split data
     print("\n2. Splitting data...")
     X_train, X_test, y_train, y_test = split_data(df, "gini")
     print(f"   Train size: {X_train.shape}")
     print(f"   Test size:  {X_test.shape}")
 
-   
+ #Train models  
     print("\n3. Training models...")
     results = compare_models(X_train, X_test, y_train, y_test)
     print("   ✓ All models trained")
 
-    
+#Evaluate models   
     print("\n4. Evaluating models...")
     print(results)
 

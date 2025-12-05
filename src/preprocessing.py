@@ -13,7 +13,7 @@ def clean_inequality_data(
     end_year: int = 2020,
 ) -> pd.DataFrame:
 
-
+# Clean and preprocess the World Bank inequality dataset
     input_path = Path(input_path)
     output_path = Path(output_path)
 
@@ -22,7 +22,7 @@ def clean_inequality_data(
 
     print("Initial shape:", df.shape)
 
-  
+# 1. Keep only countries with sufficiently Gini values  
     gini_counts = df[df["gini"].notna()].groupby("country")["gini"].count()
     valid_countries = gini_counts[gini_counts >= min_gini_per_country].index
 
@@ -30,18 +30,18 @@ def clean_inequality_data(
     df = df[df["country"].isin(valid_countries)]
     print("After country filter:", df.shape)
 
-
+# 2. Keep only observations within the chosen year window
     df = df[(df["year"] >= start_year) & (df["year"] <= end_year)]
     print(f"After year filter ({start_year}-{end_year}):", df.shape)
 
- 
+ # 3. Drop rows without a Gini value  
     df = df[df["gini"].notna()]
     print("After dropping rows without Gini:", df.shape)
 
-  
+#  Sort for correct interpolation  
     df = df.sort_values(["country", "year"])
 
-
+# 4. Select numeric columns to interpolate 
     numeric_cols = df.select_dtypes(include="number").columns.tolist()
 
 
@@ -51,7 +51,7 @@ def clean_inequality_data(
 
     print("Numeric columns to interpolate:", numeric_cols)
 
-  
+# 5. Interpolation of missing values by country  
     for col in numeric_cols:
         df[col] = df.groupby("country")[col].transform(
             lambda s: s.interpolate(limit_direction="both")
@@ -63,7 +63,7 @@ def clean_inequality_data(
     print("\n Number of NA per column after cleaning:")
     print(df.isna().sum())
 
-
+# 6. Save cleaned dataset
     output_path.parent.mkdir(exist_ok=True)
     df.to_excel(output_path, index=False)
 

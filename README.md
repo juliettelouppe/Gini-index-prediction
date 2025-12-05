@@ -50,4 +50,4 @@ XGBoost, 0.9383, 2.1749, 1.6435
 Best Model: XGBoost (typically shows best performance on nonlinear relationships)
 
 ##Requirements
-python 3.11, pandas, scikit-learn, xgboost, matplotlib, seaborn, openxyl (for Excel reading)
+python 3.11, pandas, numpy, statsmodels, jupyter scikit-learn, xgboost, matplotlib, seaborn, openxyl (for Excel reading)

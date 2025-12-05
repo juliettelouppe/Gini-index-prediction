@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 from pathlib import Path
 
+# Dictionary mapping: World Bank indicator code
 WB_INDICATORS = {
     "SI.POV.GINI": "gini",
     "NY.GDP.PCAP.CD": "gdp_pc",
@@ -16,8 +17,10 @@ WB_INDICATORS = {
 }
 
 def fetch_wb_indicator(indicator_code: str, col_name: str) -> pd.DataFrame:
+# Downloads a single World Bank indicator using the API    
     print(f"  - downloading {col_name} ({indicator_code})")
 
+ # Build API request URL
     url = (
         f"https://api.worldbank.org/v2/country/all/"
         f"indicator/{indicator_code}?format=json&per_page=20000"
@@ -48,7 +51,7 @@ def fetch_wb_indicator(indicator_code: str, col_name: str) -> pd.DataFrame:
                 col_name: value,
             }
         )
-
+ # Convert collected rows into a DataFrame
     df = pd.DataFrame(rows)
     return df
 
@@ -56,6 +59,7 @@ def build_wb_dataframe() -> pd.DataFrame:
     print("Downloading World Bank data (API)…")
     wb_df = None
 
+ # Loop through all selected indicators
     for code, name in WB_INDICATORS.items():
         df = fetch_wb_indicator(code, name)
         if wb_df is None:
@@ -64,11 +68,12 @@ def build_wb_dataframe() -> pd.DataFrame:
             wb_df = wb_df.merge(
                 df, on=["country", "country_code", "year"], how="outer"
             )
-
+# Keep only the years we want for the project
     wb_df = wb_df[(wb_df["year"] >= 1990) & (wb_df["year"] <= 2023)]
     return wb_df
 
 def main():
+# Download and assemble the complete dataset 
     wb_df = build_wb_dataframe()
 
     output_path = "data/wb_inequality_data.xlsx"   

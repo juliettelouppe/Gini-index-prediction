@@ -1,3 +1,5 @@
+# run with python -m src.split_data (module package src)
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from pathlib import Path
@@ -7,7 +9,7 @@ RESULTS_DIR = Path("results")
 
 
 def split_data(df, target_column, test_size=0.2, random_state=42):
-
+# Split the cleaned dataset into train–test subsets.
 
     numeric_cols = df.select_dtypes(include="number").columns.tolist()
     numeric_cols.remove(target_column)
@@ -15,6 +17,7 @@ def split_data(df, target_column, test_size=0.2, random_state=42):
     X = df[numeric_cols]
     y = df[target_column]
 
+# Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -60,4 +63,4 @@ if __name__ == "__main__":
 
     save_splits(X_train, X_test, y_train, y_test)
 
-# load with python -m src.split_data (module package src)
+# run with python -m src.split_data (module package src)
