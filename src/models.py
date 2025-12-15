@@ -1,4 +1,4 @@
-# run with python -m src.models2 (package src)
+# run with python -m src.models (package src)
 
 from pathlib import Path
 import os
@@ -187,4 +187,4 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = split_data(df, "gini")
     compare_models(X_train, X_test, y_train, y_test)
 
-# run with python -m src.models2 (package src)
+# run with python -m src.models (package src)
