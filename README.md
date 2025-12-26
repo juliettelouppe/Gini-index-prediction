@@ -70,3 +70,6 @@ Best Model: XGBoost (typically shows best performance on nonlinear relationships
 
 ## Requirements
 python 3.11, pandas, numpy, statsmodels, jupyter scikit-learn, xgboost, matplotlib, seaborn, openxyl (for Excel reading)
+
+## Project report
+Link of the report : [project_report.pdf](https://github.com/juliettelouppe/Gini-index-prediction/blob/main/project_report.pdf)
